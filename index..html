@@ -17,7 +17,6 @@
         <p>Status: <span id="status">Waiting for AlipayJSBridge...</span></p>
         <div id="result"></div>
     </div>
-
     <script>
         function showResult(text) {
             const resDiv = document.getElementById('result');
@@ -45,7 +44,6 @@
         } else {
             document.addEventListener('AlipayJSBridgeReady', triggerBridge, false);
         }
-
         // Jika setelah 5 detik tidak ada respon
         setTimeout(() => {
             if (document.getElementById('status').innerText.includes("Waiting")) {
